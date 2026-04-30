@@ -12,6 +12,7 @@ console.log(user);
       const res = await API.get("/auth/me");
       setUser(res.data.data);
     } catch (err) {
+      console.error("Error fetching user:", err);
       setUser(null);
     } finally {
       setLoading(false);
@@ -25,8 +26,14 @@ console.log(user);
   //login
   const login = async (form) => {
     const res = await API.post("/auth/login", form);
-    setUser(res.data.data);
-    return res.data; 
+    const token = res.data?.token || res.data?.data?.token;
+
+    if (token) {
+      localStorage.setItem("token", token);
+    }
+
+    setUser(res.data.data || res.data);
+    return res.data;
   };
 
   //register
@@ -37,6 +44,7 @@ console.log(user);
   //logout
   const logout = async () => {
     await API.post("/auth/logout");
+    localStorage.removeItem("token");
     setUser(null);
   };
 
