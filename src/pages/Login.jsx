@@ -21,6 +21,8 @@ function Login() {
 
     try {
       const res = await login(form);
+       localStorage.setItem("token", res.data.token);
+
 
       const role = res?.data?.role;
 
