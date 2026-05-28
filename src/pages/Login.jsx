@@ -21,7 +21,10 @@ function Login() {
 
     try {
       const res = await login(form);
-      const role = res?.data?.role || res?.data?.data?.role;
+       localStorage.setItem("token", res.data.token);
+
+
+      const role = res?.data?.role;
 
       if (role === "ADMIN") navigate("/admin");
       else if (role === "DOCTOR") navigate("/doctor");
