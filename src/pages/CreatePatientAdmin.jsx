@@ -3,9 +3,13 @@ import { API } from "../services/authServices";
 import Sidebar from "../components/Sidebar";
 
 function AdminCreatePatient() {
+
+  // ==========================================
+  // STATE
+  // ==========================================
   const [form, setForm] = useState({
     name: "",
-    email: "", 
+    email: "",
     age: "",
     phoneNo: "",
     gender: "",
@@ -15,29 +19,65 @@ function AdminCreatePatient() {
 
   const [doctors, setDoctors] = useState([]);
 
+  const [loading, setLoading] = useState(false);
+
+
+  // ==========================================
+  // FETCH DOCTORS
+  // ==========================================
   useEffect(() => {
     fetchDoctors();
   }, []);
 
   const fetchDoctors = async () => {
+
     try {
+
       const res = await API.get("/doctors");
+
       setDoctors(res.data.data);
+
     } catch (err) {
+
       console.log(err);
+
     }
+
   };
 
+
+  // ==========================================
+  // HANDLE CHANGE
+  // ==========================================
+  const handleChange = (e) => {
+
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
+
+  };
+
+
+  // ==========================================
+  // HANDLE SUBMIT
+  // ==========================================
   const handleSubmit = async (e) => {
+
     e.preventDefault();
 
     try {
-      await API.post("/patients", form);
-      alert("Patient created");
 
+      setLoading(true);
+
+      await API.post("/patients", form);
+
+      alert("Patient created successfully ✅");
+
+      // RESET FORM
       setForm({
         name: "",
-        email: "", 
+        email: "",
         age: "",
         phoneNo: "",
         gender: "",
@@ -46,143 +86,216 @@ function AdminCreatePatient() {
       });
 
     } catch (err) {
-      console.log(err.response?.data);
-      alert(err.response?.data?.message || "Error creating patient ❌");
+
+      console.log(err);
+
+      alert(
+        err?.response?.data?.message ||
+        "Error creating patient ❌"
+      );
+
+    } finally {
+
+      setLoading(false);
+
     }
+
   };
 
+
+  // ==========================================
+  // STYLES
+  // ==========================================
   const inputStyle = {
     width: "100%",
     padding: "12px",
-    borderRadius: "6px",
-    border: "1px solid #ccc",
+    borderRadius: "8px",
+    border: "1px solid #dcdcdc",
     fontSize: "14px",
+    outline: "none",
+    boxSizing: "border-box",
   };
 
+
   return (
-    <div style={{ display: "flex", background: "#f4f6f9", minHeight: "100vh" }}>
+
+    <div
+      style={{
+        display: "flex",
+        background: "#f4f6f9",
+        minHeight: "100vh",
+      }}
+    >
+
       <Sidebar />
 
-      <div style={{ marginLeft: "240px", width: "100%", padding: "30px" }}>
+      {/* MAIN CONTENT */}
+      <div
+        style={{
+          marginLeft: "240px",
+          width: "100%",
+          padding: "40px",
+        }}
+      >
+
         <div
           style={{
-            maxWidth: "500px",
+            maxWidth: "550px",
             margin: "auto",
             background: "#fff",
-            padding: "25px",
-            borderRadius: "10px",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+            padding: "35px",
+            borderRadius: "14px",
+            boxShadow: "0 4px 18px rgba(0,0,0,0.08)",
           }}
         >
-          <h2 style={{ textAlign: "center", marginBottom: "20px" }}>
+
+          {/* TITLE */}
+          <h2
+            style={{
+              textAlign: "center",
+              marginBottom: "25px",
+              color: "#1976d2",
+            }}
+          >
             Create Patient 
           </h2>
 
+
+          {/* FORM */}
           <form
             onSubmit={handleSubmit}
-            style={{ display: "flex", flexDirection: "column", gap: "15px" }}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "18px",
+            }}
           >
 
-         
+            {/* NAME */}
             <input
-              style={inputStyle}
+              type="text"
+              name="name"
               placeholder="Full Name"
               value={form.name}
-              onChange={(e) =>
-                setForm({ ...form, name: e.target.value })
-              }
+              onChange={handleChange}
+              style={inputStyle}
             />
 
-         
+            {/* EMAIL */}
             <input
-              style={inputStyle}
-              placeholder="Email"
               type="email"
+              name="email"
+              placeholder="Patient Email"
               value={form.email}
-              onChange={(e) =>
-                setForm({ ...form, email: e.target.value })
-              }
+              onChange={handleChange}
+              style={inputStyle}
             />
 
-        
+            {/* AGE */}
             <input
-              style={inputStyle}
-              placeholder="Age"
               type="number"
+              name="age"
+              placeholder="Age"
               value={form.age}
-              onChange={(e) =>
-                setForm({ ...form, age: e.target.value })
-              }
+              onChange={handleChange}
+              style={inputStyle}
             />
 
-        
+            {/* PHONE */}
             <input
-              style={inputStyle}
+              type="text"
+              name="phoneNo"
               placeholder="Phone Number"
               value={form.phoneNo}
-              onChange={(e) =>
-                setForm({ ...form, phoneNo: e.target.value })
-              }
+              onChange={handleChange}
+              style={inputStyle}
             />
 
-       
+            {/* GENDER */}
             <select
-              style={inputStyle}
+              name="gender"
               value={form.gender}
-              onChange={(e) =>
-                setForm({ ...form, gender: e.target.value })
-              }
+              onChange={handleChange}
+              style={inputStyle}
             >
-              <option value="">Select Gender</option>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
+              <option value="">
+                Select Gender
+              </option>
+
+              <option value="Male">
+                Male
+              </option>
+
+              <option value="Female">
+                Female
+              </option>
+
+              <option value="Others">
+                Others
+              </option>
             </select>
 
- 
+
+            {/* DISEASE */}
             <input
-              style={inputStyle}
+              type="text"
+              name="disease"
               placeholder="Disease / Condition"
               value={form.disease}
-              onChange={(e) =>
-                setForm({ ...form, disease: e.target.value })
-              }
+              onChange={handleChange}
+              style={inputStyle}
             />
 
 
+            {/* DOCTOR */}
             <select
-              style={inputStyle}
+              name="doctorAssigned"
               value={form.doctorAssigned}
-              onChange={(e) =>
-                setForm({ ...form, doctorAssigned: e.target.value })
-              }
+              onChange={handleChange}
+              style={inputStyle}
             >
-              <option value="">Select Doctor</option>
+              <option value="">
+                Select Doctor
+              </option>
+
               {doctors.map((doc) => (
-                <option key={doc._id} value={doc._id}>
+                <option
+                  key={doc._id}
+                  value={doc._id}
+                >
                   {doc.name} ({doc.specialization})
                 </option>
               ))}
             </select>
 
-  
+
+            {/* BUTTON */}
             <button
               type="submit"
+              disabled={loading}
               style={{
                 marginTop: "10px",
-                padding: "12px",
-                background: "#2196F3",
+                padding: "14px",
+                background: "#1976d2",
                 color: "#fff",
                 border: "none",
-                borderRadius: "6px",
+                borderRadius: "8px",
                 fontSize: "16px",
                 cursor: "pointer",
+                fontWeight: "600",
               }}
             >
-              Create Patient
+              {loading
+                ? "Creating..."
+                : "Create Patient"}
             </button>
+
           </form>
+
         </div>
+
       </div>
+
     </div>
   );
 }
